@@ -2,6 +2,10 @@
 from __future__ import annotations
 from dataclasses import asdict, dataclass
 
+# 引擎唯一拒因：按优先序依次试探各连续空档后，仍无任何空档可容纳
+REASON_NO_FIT_SPAN = "E_NO_FIT_SPAN"
+REASON_NO_FIT_SPAN_TEXT = "无连续空档可放下且不跨越挡柱"
+
 @dataclass
 class Placement:
     vendor_id: int
@@ -16,6 +20,7 @@ class Rejected:
     vendor_name: str
     width_m: float
     reason: str
+    reason_code: str = REASON_NO_FIT_SPAN
 
 @dataclass
 class AllocResult:
@@ -70,7 +75,7 @@ def allocate_first_fit(width_m: float, vendors: list[dict], pillars: list[dict])
                 placed = True
                 break
         if not placed:
-            rejected.append(Rejected(v["id"], v["name"], need, "无连续空档可放下且不跨越挡柱"))
+            rejected.append(Rejected(v["id"], v["name"], need, REASON_NO_FIT_SPAN_TEXT, REASON_NO_FIT_SPAN))
     free = [(round(a, 3), round(b, 3)) for a, b in remain if b - a > 1e-6]
     return AllocResult(placements, rejected, free)
 

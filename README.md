@@ -31,3 +31,25 @@ docker compose up --build
 ```bash
 docker compose exec api pytest -q
 ```
+
+## 开间结果包
+
+每次开间都按同一套口径产出固定三文件的结果包（目录或 `.zip`），与主图色块、放不下名单同源：
+
+| 文件 | 内容 |
+| --- | --- |
+| `manifest.json` | 清单：街宽与柱心（`position_m` / `thickness_m`） |
+| `placements.json` | 放置：起点、终点、宽度与摊名 |
+| `rejected.json` | 拒绝：放不下与拒因码（`E_NO_FIT_SPAN`） |
+
+写出与校验严格分离：**写出不调用校验；校验只读这三文件**。校验做三项硬判（清单合法、放置不压柱/不出界/不重叠、拒绝项确实放不下），任一破即以非 0 结束，且不写库。缺放置文件（`E_PLACEMENTS_MISSING`）与色块压柱（`E_STALL_OVER_PILLAR`）分码、互不代判。校验不过时库内已成功运行的行数不增。
+
+```bash
+# 重新读柱位 → 开间 → 写包 → 只读校验 → 绿了才落库（改柱后自动按新柱，不吃旧缓存）
+python -m app.services.package_orchestrator export --segment-id 1 --out ./pkg        # 目录
+python -m app.services.package_orchestrator export --segment-id 1 --out ./pkg.zip    # 压缩包
+# 只读校验已有包：绿 0 / 废 1
+python -m app.services.package_orchestrator verify --path ./pkg
+```
+
+`tests/fixtures/` 内附两份离线坏包：`bad_missing_placements.zip`（缺放置文件）、`bad_over_pillar.zip`（色块压柱），可用 `python tests/fixtures/build_bad_packages.py` 重新生成。
