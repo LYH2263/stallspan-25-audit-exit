@@ -6,3 +6,4 @@ frontend/dist/
 .pytest_cache/
 *.pyc
 .DS_Store
+exports/

@@ -1,0 +1,7 @@
+{
+  "segment": {"id": 1, "name": "东街段", "width_m": 30.0},
+  "pillars": [
+    {"position_m": 10.0, "thickness_m": 0.5, "label": "灯柱A"},
+    {"position_m": 20.0, "thickness_m": 0.5, "label": "灯柱B"}
+  ]
+}

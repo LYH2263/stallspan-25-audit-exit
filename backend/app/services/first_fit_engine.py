@@ -2,6 +2,9 @@
 from __future__ import annotations
 from dataclasses import asdict, dataclass
 
+# 拒因码：放不下页、API 与结果包共用同一套口径
+REASON_NO_CONTIGUOUS_SPAN = "NO_CONTIGUOUS_SPAN"
+
 @dataclass
 class Placement:
     vendor_id: int
@@ -16,6 +19,7 @@ class Rejected:
     vendor_name: str
     width_m: float
     reason: str
+    reason_code: str = REASON_NO_CONTIGUOUS_SPAN
 
 @dataclass
 class AllocResult:
